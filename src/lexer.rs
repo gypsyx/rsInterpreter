@@ -1,5 +1,8 @@
 use crate::token::*;
 
+fn is_letter(ch: char) -> bool {
+    (ch >= 'a' && ch <= 'z') || (ch == '_') || (ch >= 'A' && ch <= 'Z')
+}
 pub struct Lexer {
     input: String,
     position: usize,
@@ -19,7 +22,7 @@ impl Lexer {
         lexer
     }
 
-    pub fn read_char(&mut self) {
+    fn read_char(&mut self) {
         if self.read_position >= self.input.len() {
             self.ch = Some('0');
         } else {
@@ -59,7 +62,27 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_next_token() {
+    fn test_is_letter() {
+        assert_eq!(true, is_letter('a'));
+        assert_eq!(true, is_letter('z'));
+        assert_eq!(true, is_letter('x'));
+        assert_eq!(false, is_letter('$'));
+
+        assert_eq!(true, is_letter('_'));
+        assert_eq!(true, is_letter('A'));
+        assert_eq!(true, is_letter('Z'));
+        assert_eq!(true, is_letter('X'));
+    }
+
+    fn test_next_token(lexer: &mut Lexer, expected: Vec<Token>) {
+        for exp in expected {
+            let token = lexer.next_token();
+            assert_eq!(token, exp);
+        }
+    }
+
+    #[test]
+    fn test_next_token_1() {
         let input = "=+(){},;";
         let mut lexer = Lexer::new(input);
 
@@ -74,9 +97,63 @@ mod tests {
             Token::new(SEMICOLON, ";"),
         ];
 
-        for exp in expected {
-            let token = lexer.next_token();
-            assert_eq!(token, exp);
-        }
+        test_next_token(&mut lexer, expected);
+    }
+
+    // TODO - parametrize tests using test-case crate?
+    #[test]
+    fn test_next_token_2() {
+        let input = r#"let five = 5;
+        let ten = 10;
+        
+        let add = fn(x, y) {
+            x+y;
+        };
+        
+        let result = add(five, ten);"#;
+        println!("{}", input);
+
+        let mut lexer = Lexer::new(input);
+
+        let expected = vec![
+            Token::new(LET, "let"),
+            Token::new(IDENT, "five"),
+            Token::new(ASSIGN, "="),
+            Token::new(INT, "5"),
+            Token::new(SEMICOLON, ";"),
+            Token::new(LET, "let"),
+            Token::new(IDENT, "ten"),
+            Token::new(ASSIGN, "="),
+            Token::new(INT, "10"),
+            Token::new(SEMICOLON, ";"),
+            Token::new(LET, "let"),
+            Token::new(IDENT, "add"),
+            Token::new(ASSIGN, "="),
+            Token::new(FUNCTION, "fn"),
+            Token::new(LPAREN, "("),
+            Token::new(IDENT, "x"),
+            Token::new(COMMA, ","),
+            Token::new(IDENT, "y"),
+            Token::new(RPAREN, ")"),
+            Token::new(LBRACE, "{"),
+            Token::new(IDENT, "x"),
+            Token::new(PLUS, "+"),
+            Token::new(IDENT, "y"),
+            Token::new(SEMICOLON, ";"),
+            Token::new(RBRACE, "}"),
+            Token::new(SEMICOLON, ";"),
+            Token::new(LET, "let"),
+            Token::new(IDENT, "result"),
+            Token::new(ASSIGN, "="),
+            Token::new(IDENT, "add"),
+            Token::new(LPAREN, "("),
+            Token::new(IDENT, "five"),
+            Token::new(COMMA, ","),
+            Token::new(IDENT, "ten"),
+            Token::new(RPAREN, ")"),
+            Token::new(SEMICOLON, ";"),
+        ];
+
+        test_next_token(&mut lexer, expected);
     }
 }
