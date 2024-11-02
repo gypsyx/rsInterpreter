@@ -28,12 +28,14 @@ impl Lexer {
 
         self.position = self.read_position;
         self.read_position += 1;
-
     }
 
     pub fn next_token(&mut self) -> Token {
         // let token: Token;
-        println!("[next_token()] self.ch {:?} position {}, read_pos: {}", self.ch, self.position, self.read_position);
+        println!(
+            "[next_token()] self.ch {:?} position {}, read_pos: {}",
+            self.ch, self.position, self.read_position
+        );
 
         let token: Token = match self.ch {
             Some('=') => Token::new(ASSIGN, "="),
@@ -49,10 +51,8 @@ impl Lexer {
         };
         self.read_char();
         token
-
     }
 }
-
 
 #[cfg(test)]
 mod tests {
@@ -71,7 +71,7 @@ mod tests {
             Token::new(LBRACE, "{"),
             Token::new(RBRACE, "}"),
             Token::new(COMMA, ","),
-            Token::new(SEMICOLON, ";")
+            Token::new(SEMICOLON, ";"),
         ];
 
         for exp in expected {

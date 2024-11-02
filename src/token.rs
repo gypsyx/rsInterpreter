@@ -1,9 +1,8 @@
-
 // type TokenType<'a> = &'a str;
 #[derive(PartialEq, Debug)]
 pub struct Token {
     pub token_type: String,
-    pub literal: String
+    pub literal: String,
 }
 
 impl Token {
