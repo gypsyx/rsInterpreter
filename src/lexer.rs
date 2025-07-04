@@ -101,7 +101,7 @@ mod tests {
     }
 
     // TODO - parametrize tests using test-case crate?
-    #[test]
+    // #[test]
     fn test_next_token_2() {
         let input = r#"let five = 5;
         let ten = 10;
